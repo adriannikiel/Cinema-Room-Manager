@@ -21,14 +21,30 @@ public class Cinema {
         // Write your code here
 
         Cinema cinema = new Cinema();
-
         initCinema(cinema);
-        drawCinemaRoom(cinema.cinemaRoom);
-        //calculateProfit(cinema.rows, cinema.seatsInRow);
-        setClientSeat(cinema);
-        calculatePrice(cinema.cinemaRoom, cinema.clientSeat[0]);
-        drawCinemaRoom(cinema.cinemaRoom);
 
+        while (true) {
+            int userChoice = chooseOption();
+
+            if (userChoice == 0) {
+                break;
+            } else if (userChoice == 1) {
+                drawCinemaRoom(cinema.cinemaRoom);
+            } else if (userChoice == 2) {
+                setClientSeat(cinema);
+                calculatePrice(cinema.cinemaRoom, cinema.clientSeat[0]);
+            }
+
+        }
+    }
+
+    private static int chooseOption() {
+        System.out.println();
+        System.out.println("1. Show the seats");
+        System.out.println("2. Buy a ticket");
+        System.out.println("0. Exit");
+
+        return scanner.nextInt();
     }
 
     public static void initCinema(Cinema cinema) {
@@ -42,6 +58,7 @@ public class Cinema {
     }
 
     public static void setClientSeat(Cinema cinema) {
+        System.out.println();
         System.out.println("Enter a row number:");
         cinema.clientSeat[0] = scanner.nextInt();
 
@@ -70,7 +87,7 @@ public class Cinema {
 
         }
 
-        System.out.print("\nTicket price: ");
+        System.out.print("Ticket price: ");
         System.out.println("$" + (int) price);
 
         return price;
@@ -133,6 +150,5 @@ public class Cinema {
             System.out.println();
         }
 
-        System.out.println();
     }
 }
