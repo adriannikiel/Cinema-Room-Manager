@@ -1,14 +1,40 @@
 package cinema;
 
+import java.util.Scanner;
+
 public class Cinema {
 
     public static void main(String[] args) {
         // Write your code here
 
-        int n = 7;
-        int m = 8;
+        Scanner scanner = new Scanner(System.in);
 
-        drawCinemaRoom(n, m);
+        System.out.println("Enter the number of rows:");
+        int rows = scanner.nextInt();
+
+        System.out.println("Enter the number of seats in each row:");
+        int seatsInRow = scanner.nextInt();
+
+        double profit = calculateProfit(rows, seatsInRow);
+
+        System.out.println("Total income:");
+        System.out.println("$" + (int) profit);
+
+        //drawCinemaRoom(rows, seatsInRow);
+    }
+
+    private static double calculateProfit(int rows, int seatsInRow) {
+
+        final int NUMBER_OF_SEATS = rows * seatsInRow;
+        final int PRICE_FOR_TICKET_PREMIUM = 10;
+        final int PRICE_FOR_TICKET = 8;
+
+        if (NUMBER_OF_SEATS <= 60) {
+            return NUMBER_OF_SEATS * PRICE_FOR_TICKET_PREMIUM;
+        } else {
+            int premiumRows = rows / 2;
+            return premiumRows * PRICE_FOR_TICKET_PREMIUM * seatsInRow + (rows-premiumRows) * PRICE_FOR_TICKET * seatsInRow;
+        }
     }
 
     private static char[][] drawCinemaRoom(int rows, int seatsInRow) {
