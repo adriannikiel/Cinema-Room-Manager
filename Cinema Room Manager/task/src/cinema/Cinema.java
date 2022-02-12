@@ -4,40 +4,98 @@ import java.util.Scanner;
 
 public class Cinema {
 
+    private final static int PRICE_FOR_TICKET_PREMIUM = 10;
+    private final static int PRICE_FOR_TICKET = 8;
+
+    private static Scanner scanner = new Scanner(System.in);
+
+    private char[][] cinemaRoom;
+    private int rows;
+    private int seatsInRow;
+    private int[] clientSeat = new int[2];
+
+    public Cinema() {
+    }
+
     public static void main(String[] args) {
         // Write your code here
 
-        Scanner scanner = new Scanner(System.in);
+        Cinema cinema = new Cinema();
 
+        initCinema(cinema);
+        drawCinemaRoom(cinema.cinemaRoom);
+        //calculateProfit(cinema.rows, cinema.seatsInRow);
+        setClientSeat(cinema);
+        calculatePrice(cinema.cinemaRoom, cinema.clientSeat[0]);
+        drawCinemaRoom(cinema.cinemaRoom);
+
+    }
+
+    public static void initCinema(Cinema cinema) {
         System.out.println("Enter the number of rows:");
-        int rows = scanner.nextInt();
+        cinema.rows = scanner.nextInt();
 
         System.out.println("Enter the number of seats in each row:");
-        int seatsInRow = scanner.nextInt();
+        cinema.seatsInRow = scanner.nextInt();
 
-        double profit = calculateProfit(rows, seatsInRow);
+        cinema.cinemaRoom = setEmptyCinemaRoom(cinema.rows, cinema.seatsInRow);
+    }
 
-        System.out.println("Total income:");
-        System.out.println("$" + (int) profit);
+    public static void setClientSeat(Cinema cinema) {
+        System.out.println("Enter a row number:");
+        cinema.clientSeat[0] = scanner.nextInt();
 
-        //drawCinemaRoom(rows, seatsInRow);
+        System.out.println("Enter a seat number in that row:");
+        cinema.clientSeat[1] = scanner.nextInt();
+
+        cinema.cinemaRoom[cinema.clientSeat[0]][cinema.clientSeat[1]] = 'B';
+    }
+
+    private static double calculatePrice(char[][] cinemaRoom, int row) {
+
+        final int NUMBER_OF_SEATS = (cinemaRoom.length - 1) * (cinemaRoom[0].length - 1);
+
+        double price;
+
+        if (NUMBER_OF_SEATS <= 60) {
+            price = Cinema.PRICE_FOR_TICKET_PREMIUM;
+        } else {
+            int premiumRows = (cinemaRoom.length - 1) / 2;
+
+            if (row <= premiumRows) {
+                price = PRICE_FOR_TICKET_PREMIUM;
+            } else {
+                price = PRICE_FOR_TICKET;
+            }
+
+        }
+
+        System.out.print("\nTicket price: ");
+        System.out.println("$" + (int) price);
+
+        return price;
     }
 
     private static double calculateProfit(int rows, int seatsInRow) {
 
         final int NUMBER_OF_SEATS = rows * seatsInRow;
-        final int PRICE_FOR_TICKET_PREMIUM = 10;
-        final int PRICE_FOR_TICKET = 8;
+
+        double profit;
 
         if (NUMBER_OF_SEATS <= 60) {
-            return NUMBER_OF_SEATS * PRICE_FOR_TICKET_PREMIUM;
+            profit = NUMBER_OF_SEATS * Cinema.PRICE_FOR_TICKET_PREMIUM;
         } else {
             int premiumRows = rows / 2;
-            return premiumRows * PRICE_FOR_TICKET_PREMIUM * seatsInRow + (rows-premiumRows) * PRICE_FOR_TICKET * seatsInRow;
+            profit = premiumRows * Cinema.PRICE_FOR_TICKET_PREMIUM * seatsInRow + (rows - premiumRows) * Cinema.PRICE_FOR_TICKET * seatsInRow;
         }
+
+        System.out.println("Total income:");
+        System.out.println("$" + (int) profit);
+
+        return profit;
     }
 
-    private static char[][] drawCinemaRoom(int rows, int seatsInRow) {
+    private static char[][] setEmptyCinemaRoom(int rows, int seatsInRow) {
 
         char[][] cinemaRoom = new char[rows + 1][seatsInRow + 1];
 
@@ -58,17 +116,14 @@ public class Cinema {
             for (int j = 1; j <= seatsInRow; j++) {
                 cinemaRoom[i][j] = 'S';
             }
-
         }
-
-        drawCinemaRoom(cinemaRoom);
 
         return cinemaRoom;
     }
 
-    private static void drawCinemaRoom(char[][] cinemaRoom) {
+    public static void drawCinemaRoom(char[][] cinemaRoom) {
 
-        System.out.println("Cinema:");
+        System.out.println("\nCinema:");
 
         for (int i = 0; i < cinemaRoom.length; i++) {
             for (int j = 0; j < cinemaRoom[i].length; j++) {
@@ -77,5 +132,7 @@ public class Cinema {
             }
             System.out.println();
         }
+
+        System.out.println();
     }
 }
