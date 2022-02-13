@@ -4,23 +4,22 @@ import java.util.Scanner;
 
 public class Cinema {
 
-    private final static int PRICE_FOR_TICKET_PREMIUM = 10;
-    private final static int PRICE_FOR_TICKET = 8;
+    private final static int PRICE_FOR_PREMIUM_TICKET = 10;
+    private final static int PRICE_FOR_NORMAL_TICKET = 8;
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
     private char[][] cinemaRoom;
     private int rows;
     private int seatsInRow;
-    private int[] clientSeat = new int[2];
 
     public Cinema() {
     }
 
     public static void main(String[] args) {
-        // Write your code here
 
         Cinema cinema = new Cinema();
+
         initCinema(cinema);
 
         while (true) {
@@ -31,13 +30,7 @@ public class Cinema {
             } else if (userChoice == 1) {
                 drawCinemaRoom(cinema);
             } else if (userChoice == 2) {
-                while (true) {
-                    if (setClientSeat(cinema)) {
-                        break;
-                    }
-                }
-                calculatePrice(cinema, cinema.clientSeat[0]);
-
+                buyTicket(cinema);
             } else if (userChoice == 3) {
                 printStatistics(cinema);
             }
@@ -64,50 +57,57 @@ public class Cinema {
         cinema.cinemaRoom = setEmptyCinemaRoom(cinema.rows, cinema.seatsInRow);
     }
 
-    public static boolean setClientSeat(Cinema cinema) {
-        System.out.println();
-        System.out.println("Enter a row number:");
-        cinema.clientSeat[0] = scanner.nextInt();
+    public static void buyTicket(Cinema cinema) {
 
-        System.out.println("Enter a seat number in that row:");
-        cinema.clientSeat[1] = scanner.nextInt();
+        int row = 0;
+        int seatInRow = 0;
 
-        if (cinema.clientSeat[0] < 1 || cinema.clientSeat[0] > 9 ||
-                cinema.clientSeat[1] < 1 || cinema.clientSeat[1] > 9) {
-            System.out.println("Wrong input!");
-            return false;
+        while (true) {
+            System.out.println();
+
+            System.out.println("Enter a row number:");
+            row = scanner.nextInt();
+
+            System.out.println("Enter a seat number in that row:");
+            seatInRow = scanner.nextInt();
+
+            if (row < 1 || row > 9 || seatInRow < 1 || seatInRow > 9) {
+                System.out.println("Wrong input!");
+                continue;
+            }
+
+            if (cinema.cinemaRoom[row][seatInRow] == 'B') {
+                System.out.println("That ticket has already been purchased!");
+                continue;
+            }
+
+            cinema.cinemaRoom[row][seatInRow] = 'B';
+            showPrice(cinema, row);
+
+            return;
         }
 
-        if (cinema.cinemaRoom[cinema.clientSeat[0]][cinema.clientSeat[1]] == 'B') {
-            System.out.println("That ticket has already been purchased!");
-            return false;
-        }
-
-        cinema.cinemaRoom[cinema.clientSeat[0]][cinema.clientSeat[1]] = 'B';
-        return true;
     }
 
-    private static double calculatePrice(Cinema cinema, int row) {
+    private static void showPrice(Cinema cinema, int row) {
 
         final int NUMBER_OF_SEATS = cinema.rows * cinema.seatsInRow;
         double price;
 
         if (NUMBER_OF_SEATS <= 60) {
-            price = Cinema.PRICE_FOR_TICKET_PREMIUM;
+            price = Cinema.PRICE_FOR_PREMIUM_TICKET;
         } else {
             int premiumRows = cinema.rows / 2;
 
             if (row <= premiumRows) {
-                price = PRICE_FOR_TICKET_PREMIUM;
+                price = PRICE_FOR_PREMIUM_TICKET;
             } else {
-                price = PRICE_FOR_TICKET;
+                price = PRICE_FOR_NORMAL_TICKET;
             }
         }
 
         System.out.print("\nTicket price: ");
         System.out.println("$" + (int) price);
-
-        return price;
     }
 
     private static char[][] setEmptyCinemaRoom(int rows, int seatsInRow) {
@@ -165,21 +165,23 @@ public class Cinema {
     }
 
     private static double calculateCurrentIncome(Cinema cinema) {
+
         final int NUMBER_OF_SEATS = cinema.rows * cinema.seatsInRow;
         double income = 0;
 
         if (NUMBER_OF_SEATS <= 60) {
-            income = Cinema.PRICE_FOR_TICKET_PREMIUM * calculateSoldTickets(cinema);
+            income = Cinema.PRICE_FOR_PREMIUM_TICKET * calculateSoldTickets(cinema);
         } else {
             int premiumRows = cinema.rows / 2;
 
             double ticketPrice;
 
             for (int i = 1; i <= cinema.rows; i++) {
+
                 if (i <= premiumRows) {
-                    ticketPrice = PRICE_FOR_TICKET_PREMIUM;
+                    ticketPrice = PRICE_FOR_PREMIUM_TICKET;
                 } else {
-                    ticketPrice = PRICE_FOR_TICKET;
+                    ticketPrice = PRICE_FOR_NORMAL_TICKET;
                 }
 
                 for (int j = 1; j <= cinema.seatsInRow; j++) {
@@ -214,14 +216,11 @@ public class Cinema {
         double profit;
 
         if (NUMBER_OF_SEATS <= 60) {
-            profit = NUMBER_OF_SEATS * Cinema.PRICE_FOR_TICKET_PREMIUM;
+            profit = NUMBER_OF_SEATS * Cinema.PRICE_FOR_PREMIUM_TICKET;
         } else {
             int premiumRows = rows / 2;
-            profit = premiumRows * Cinema.PRICE_FOR_TICKET_PREMIUM * seatsInRow + (rows - premiumRows) * Cinema.PRICE_FOR_TICKET * seatsInRow;
+            profit = seatsInRow * (premiumRows * Cinema.PRICE_FOR_PREMIUM_TICKET + (rows - premiumRows) * Cinema.PRICE_FOR_NORMAL_TICKET);
         }
-
-        //System.out.println("Total income:");
-        //System.out.println("$" + (int) profit);
 
         return profit;
     }
